@@ -92,26 +92,6 @@ in css file provide the animation for each side and for the cube itself
 }
 ```
 
-#### Enable 3D mode
-first you have to include ```cube3D``` plugin after ```femto```
-``` html
-<body>
-    ...
-    <script type="text/javascript" src="dist/js/femto.js"></script>
-    <script type="text/javascript" src="dist/js/cube3D.js"></script>
-</body>
-```
-
-then pass the options
-``` javascript
-new Femto('#femto2', {
-    autoPlay: false,
-    plugin: Cube3D,
-    active3D: true,
-    slicesCount: 6,
-    mode3D: 1
-});
-```
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
