@@ -10,7 +10,7 @@ class Cube {
     this.settings = {
       openClass,
       closeClass,
-      
+      time
     };
     this.init();
   }
