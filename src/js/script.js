@@ -1,15 +1,17 @@
+import { select } from './utilities'
+
 class Cube {
-  constructor(selector, settings = {
-    openClass: 'is-open',
-    closeClass: 'is-close',
-    time: 1000
-  }) {
-    if (typeof selector === 'string') {
-      this.el = document.querySelector(selector);
-    } else {
-      this.el = selector;
-    }
-    this.settings = settings;
+  constructor(selector, {
+    openClass = 'is-open',
+    closeClass = 'is-close',
+    time = 1000
+  } = {}) {
+    this.el = select(selector);
+    this.settings = {
+      openClass,
+      closeClass,
+      
+    };
     this.init();
   }
 
@@ -80,3 +82,6 @@ class Cube {
     }, this.settings.time);
   }
 }
+
+
+export default Cube;
