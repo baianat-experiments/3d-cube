@@ -1,95 +1,89 @@
 import { select } from './utilities'
 
-class Cube {
-  constructor(selector, {
-    openClass = 'is-open',
-    closeClass = 'is-close',
-    time = 1000
-  } = {}) {
-    this.el = select(selector);
-    this.settings = {
-      openClass,
-      closeClass,
-      time
-    };
-    this._init();
+let el = null;
+let light = null;
+let wrapper = null;
+let currentX = 0;
+let currentY = 0;
+let rotateX = 0;
+let rotateY = 0;
+
+let opened = false;
+
+function Cube(selector, ref) {
+  el = select(selector);
+  _init();
+};
+
+function _init() {
+  _initData();
+  _initEvents();
+}
+
+function _initData() {
+  light = el.querySelector('.cube-light');
+  wrapper = el.parentNode;
+  // reste the cube transform
+  // you can add any value for the rotation
+  el.style.transform = 'translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)';
+  if (light) {
+    light.style.transform = 'rotateX(20deg) rotateY(-45deg)';
   }
+}
 
-  _init() {
-    this._initData();
-    this._initEvents();
-  }
-
-  _initData() {
-    this.light = this.el.querySelector('.cube-light');
-    this.wrapper = this.el.parentNode;
-    this.currentX = 0;
-    this.currentY = 0;
-    this.rotateX = 0;
-    this.rotateY = 0;
-    this.callbacks = {};
-    this.state = false;
-
-    this.el.style.transform = 'translate3d(0, 0, 0) rotateX(-20deg) rotateY(45deg)';
-    if (this.light) this.light.style.transform = 'rotateX(20deg) rotateY(-45deg)';
-  }
-
-  _initEvents() {
-    this.callbacks.onDrag = this.drag.bind(this);
-    this.callbacks.onRelease = this.relase.bind(this);
-    this.callbacks.dblClick = this.opening.bind(this);
-
-    this.el.addEventListener('mousedown', (event) => {
-      event.preventDefault();
-      this.currentX = event.clientX;
-      this.currentY = event.clientY;
-      this.rotateX = Number(this.el.style.transform.match(/rotateX\((-?[0-9]+(\.[0-9])?)*deg\)/)[1]);
-      this.rotateY = Number(this.el.style.transform.match(/rotateY\((-?[0-9]+(\.[0-9])?)*deg\)/)[1]);
-      if (!this.state) {
-        document.addEventListener('mousemove', this.callbacks.onDrag, false);
-        document.addEventListener('mouseup', this.callbacks.onRelease, false);
-      }
-    });
-    this.el.addEventListener('dblclick', this.callbacks.dblClick, false);
-  }
-
-  drag(event) {
-    let dragX = (event.clientX - this.currentX);
-    let dragY = (event.clientY - this.currentY);
-    if (event.buttons === 1) {
-      this.el.style.transform = `rotateX(${this.rotateX - (dragY / 2)}deg) rotateY(${this.rotateY + (dragX / 2)}deg)`;
-    }
-    if (event.buttons === 1 && this.light) {
-      this.light.style.transform = `rotateX(${(this.rotateX - (dragY / 2)) * -1}deg) rotateY(${(this.rotateY + (dragX / 2)) * -1}deg)`;
-    }
-  }
-
-  relase(event) {
+function _initEvents() {
+  el.addEventListener('mousedown', (event) => {
+    // to stop browser's default behavoir
     event.preventDefault();
-    document.removeEventListener('mousemove', this.callbacks.onDrag);
-    document.removeEventListener('mouseup', this.callbacks.onRelease);
-  }
+    currentX = event.clientX;
+    currentY = event.clientY;
+    rotateX = Number(el.style.transform.match(/rotateX\((-?[0-9]+(\.[0-9])?)*deg\)/)[1]);
+    rotateY = Number(el.style.transform.match(/rotateY\((-?[0-9]+(\.[0-9])?)*deg\)/)[1]);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', release);
+  });
 
-  opening(event) {
-    if (!this.state) {
-      this.state = true;
-      this.el.style.transition = '1s';
-      this.el.classList.remove(this.settings.closeClass);
-      this.el.classList.add(this.settings.openClass);
-      this.wrapper.classList.add('is-open');
-      return;
-    }
-    this.state = false;
-    this.el.classList.remove(this.settings.openClass);
-    setTimeout(() => {
-      this.el.classList.add(this.settings.closeClass);
-      this.wrapper.classList.remove('is-open');
-    }, 1);
-    setTimeout(() => {
-      this.el.style.transition = '0s';
-      this.el.classList.remove(this.settings.closeClass);
-    }, this.settings.time);
+  // when double click open cube
+  el.addEventListener('dblclick', open);
+}
+
+function drag(event) {
+  let draggedX = (event.clientX - currentX);
+  let draggedY = (event.clientY - currentY);
+
+  // check if the left mouse button clickec
+  if (event.buttons !== 1) return;
+  el.style.transform = `rotateX(${rotateX - (draggedY / 2)}deg) rotateY(${rotateY + (draggedX / 2)}deg)`;
+
+  if (light) {
+    light.style.transform = `rotateX(${(rotateX - (draggedY / 2)) * -1}deg) rotateY(${(rotateY + (draggedX / 2)) * -1}deg)`;
   }
+}
+
+function release(event) {
+  document.removeEventListener('mousemove', drag);
+  document.removeEventListener('mouseup', release);
+}
+
+function open(event) {
+  if (!opened) {
+    opened = true;
+    el.style.transition = '1s';
+    el.classList.remove('is-closed');
+    el.classList.add('is-opened');
+    wrapper.classList.add('is-opened');
+    return;
+  }
+  opened = false;
+  el.classList.remove('is-opened');
+  el.classList.add('is-closed');
+  wrapper.classList.remove('is-opened');
+
+  // remove transition after animation finised
+  setTimeout(() => {
+    el.style.transition = '0s';
+    el.classList.remove('is-closed');
+  }, 1000);
 }
 
 export default Cube;
