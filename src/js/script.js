@@ -12,10 +12,15 @@ class Cube {
       closeClass,
       time
     };
-    this.init();
+    this._init();
   }
 
-  init() {
+  _init() {
+    this._initData();
+    this._initEvents();
+  }
+
+  _initData() {
     this.light = this.el.querySelector('.cube-light');
     this.wrapper = this.el.parentNode;
     this.currentX = 0;
@@ -27,20 +32,24 @@ class Cube {
 
     this.el.style.transform = 'translate3d(0, 0, 0) rotateX(-20deg) rotateY(45deg)';
     if (this.light) this.light.style.transform = 'rotateX(20deg) rotateY(-45deg)';
+  }
+
+  _initEvents() {
+    this.callbacks.onDrag = this.drag.bind(this);
+    this.callbacks.onRelease = this.relase.bind(this);
+    this.callbacks.dblClick = this.opening.bind(this);
+
     this.el.addEventListener('mousedown', (event) => {
       event.preventDefault();
       this.currentX = event.clientX;
       this.currentY = event.clientY;
-      this.rotateX = parseInt(this.el.style.transform.match(/rotateX\(-?[0-9]+(\.[0-9]+)*deg\)/)[0].slice(8, -4));
-      this.rotateY = parseInt(this.el.style.transform.match(/rotateY\(-?[0-9]+(\.[0-9]+)*deg\)/)[0].slice(8, -4));
+      this.rotateX = Number(this.el.style.transform.match(/rotateX\((-?[0-9]+(\.[0-9])?)*deg\)/)[1]);
+      this.rotateY = Number(this.el.style.transform.match(/rotateY\((-?[0-9]+(\.[0-9])?)*deg\)/)[1]);
       if (!this.state) {
-        this.callbacks.onDrag = this.drag.bind(this);
-        this.callbacks.onRelease = this.relase.bind(this);
         document.addEventListener('mousemove', this.callbacks.onDrag, false);
         document.addEventListener('mouseup', this.callbacks.onRelease, false);
       }
     });
-    this.callbacks.dblClick = this.opening.bind(this);
     this.el.addEventListener('dblclick', this.callbacks.dblClick, false);
   }
 
