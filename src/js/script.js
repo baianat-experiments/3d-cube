@@ -16,24 +16,24 @@ class Cube {
   }
 
   init() {
-    this.light     = this.el.querySelector('.cube-light');
-    this.wrapper   = this.el.parentNode;
-    this.currentX  = 0;
-    this.currentY  = 0;
-    this.rotateX   = 0;
-    this.rotateY   = 0;
+    this.light = this.el.querySelector('.cube-light');
+    this.wrapper = this.el.parentNode;
+    this.currentX = 0;
+    this.currentY = 0;
+    this.rotateX = 0;
+    this.rotateY = 0;
     this.callbacks = {};
-    this.state     = false;
+    this.state = false;
 
     this.el.style.transform = 'translate3d(0, 0, 0) rotateX(-20deg) rotateY(45deg)';
     if (this.light) this.light.style.transform = 'rotateX(20deg) rotateY(-45deg)';
-    this.el.addEventListener('mousedown', () => {
+    this.el.addEventListener('mousedown', (event) => {
       event.preventDefault();
       this.currentX = event.clientX;
       this.currentY = event.clientY;
       this.rotateX = parseInt(this.el.style.transform.match(/rotateX\(-?[0-9]+(\.[0-9]+)*deg\)/)[0].slice(8, -4));
       this.rotateY = parseInt(this.el.style.transform.match(/rotateY\(-?[0-9]+(\.[0-9]+)*deg\)/)[0].slice(8, -4));
-      if (! this.state) {
+      if (!this.state) {
         this.callbacks.onDrag = this.drag.bind(this);
         this.callbacks.onRelease = this.relase.bind(this);
         document.addEventListener('mousemove', this.callbacks.onDrag, false);
@@ -44,7 +44,7 @@ class Cube {
     this.el.addEventListener('dblclick', this.callbacks.dblClick, false);
   }
 
-  drag() {
+  drag(event) {
     let dragX = (event.clientX - this.currentX);
     let dragY = (event.clientY - this.currentY);
     if (event.buttons === 1) {
@@ -55,14 +55,14 @@ class Cube {
     }
   }
 
-  relase() {
+  relase(event) {
     event.preventDefault();
     document.removeEventListener('mousemove', this.callbacks.onDrag);
-    document.removeEventListener('mouseup',   this.callbacks.onRelease);
+    document.removeEventListener('mouseup', this.callbacks.onRelease);
   }
 
-  opening() {
-    if (! this.state) {
+  opening(event) {
+    if (!this.state) {
       this.state = true;
       this.el.style.transition = '1s';
       this.el.classList.remove(this.settings.closeClass);
@@ -82,6 +82,5 @@ class Cube {
     }, this.settings.time);
   }
 }
-
 
 export default Cube;

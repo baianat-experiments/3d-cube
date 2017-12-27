@@ -42,7 +42,7 @@ var Cube = function Cube(selector, ref) {
   this.settings = {
     openClass: openClass,
     closeClass: closeClass,
-      
+    time: time
   };
   this.init();
 };
@@ -50,24 +50,24 @@ var Cube = function Cube(selector, ref) {
 Cube.prototype.init = function init () {
     var this$1 = this;
 
-  this.light   = this.el.querySelector('.cube-light');
+  this.light = this.el.querySelector('.cube-light');
   this.wrapper = this.el.parentNode;
-  this.currentX= 0;
-  this.currentY= 0;
+  this.currentX = 0;
+  this.currentY = 0;
   this.rotateX = 0;
   this.rotateY = 0;
   this.callbacks = {};
-  this.state   = false;
+  this.state = false;
 
   this.el.style.transform = 'translate3d(0, 0, 0) rotateX(-20deg) rotateY(45deg)';
   if (this.light) this.light.style.transform = 'rotateX(20deg) rotateY(-45deg)';
-  this.el.addEventListener('mousedown', function () {
+  this.el.addEventListener('mousedown', function (event) {
     event.preventDefault();
     this$1.currentX = event.clientX;
     this$1.currentY = event.clientY;
     this$1.rotateX = parseInt(this$1.el.style.transform.match(/rotateX\(-?[0-9]+(\.[0-9]+)*deg\)/)[0].slice(8, -4));
     this$1.rotateY = parseInt(this$1.el.style.transform.match(/rotateY\(-?[0-9]+(\.[0-9]+)*deg\)/)[0].slice(8, -4));
-    if (! this$1.state) {
+    if (!this$1.state) {
       this$1.callbacks.onDrag = this$1.drag.bind(this$1);
       this$1.callbacks.onRelease = this$1.relase.bind(this$1);
       document.addEventListener('mousemove', this$1.callbacks.onDrag, false);
@@ -78,7 +78,7 @@ Cube.prototype.init = function init () {
   this.el.addEventListener('dblclick', this.callbacks.dblClick, false);
 };
 
-Cube.prototype.drag = function drag () {
+Cube.prototype.drag = function drag (event) {
   var dragX = (event.clientX - this.currentX);
   var dragY = (event.clientY - this.currentY);
   if (event.buttons === 1) {
@@ -89,16 +89,16 @@ Cube.prototype.drag = function drag () {
   }
 };
 
-Cube.prototype.relase = function relase () {
+Cube.prototype.relase = function relase (event) {
   event.preventDefault();
   document.removeEventListener('mousemove', this.callbacks.onDrag);
   document.removeEventListener('mouseup', this.callbacks.onRelease);
 };
 
-Cube.prototype.opening = function opening () {
+Cube.prototype.opening = function opening (event) {
     var this$1 = this;
 
-  if (! this.state) {
+  if (!this.state) {
     this.state = true;
     this.el.style.transition = '1s';
     this.el.classList.remove(this.settings.closeClass);
